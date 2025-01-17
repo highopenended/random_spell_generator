@@ -1,18 +1,24 @@
 {
   "name": "random_spell_generator",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "firebase serve",
+    "deploy": "firebase deploy"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "firebase": "^11.2.0"
+    "firebase": "^10.7.2"
   },
   "devDependencies": {
-    "firebase-tools": "^13.29.1"
+    "firebase-tools": "^13.0.2",
+    "vite": "^5.0.12",
+    "@vitejs/plugin-react": "^4.2.1"
   }
 }
