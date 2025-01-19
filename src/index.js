@@ -1,4 +1,5 @@
 import { spellsData } from './data/spellsData.js';
+import traitsData from './data/traitsData.js';
 
 // Get a random spell from the entire collection
 function getRandomSpell() {
@@ -63,11 +64,11 @@ function canCastAtRank(spell, targetRank) {
 function getRandomSpellByFilter() {
     const selectedRanks = getSelectedValues('spellLevels');
     const selectedTraditions = getSelectedValues('traditions');
-    const traditionLogic = document.querySelector('input[name="traditionLogic"]:checked').value;
-    const includeHeightened = document.getElementById('includeHeightened').checked;
-    const includeCantrips = document.getElementById('includeCantrips').checked;
+    const traditionLogic = document.querySelector('input[name="traditionLogic"]:checked')?.value || 'OR';
+    const includeHeightened = document.getElementById('includeHeightened')?.checked || false;
+    const includeCantrips = document.getElementById('includeCantrips')?.checked || false;
     
-    console.log('Filtering with:', { 
+    console.log('Filter criteria:', { 
         selectedRanks, 
         selectedTraditions, 
         traditionLogic, 
@@ -169,14 +170,37 @@ function displaySpell(spell, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    // Split traits into array and filter out empty strings
+    const traits = spell.trait ? spell.trait.split(',').map(t => t.trim()).filter(t => t) : [];
+
+    // Find trait descriptions from traitsData
+    const traitsWithDescriptions = traits.map(traitName => {
+        const traitData = traitsData.find(t => t.Trait.toLowerCase() === traitName.toLowerCase());
+        return {
+            name: traitName,
+            description: traitData?.Description || 'No description available'
+        };
+    });
+
     container.innerHTML = `
         <div class="spell-card">
             <h2>${spell.name}</h2>
+            ${traitsWithDescriptions.length > 0 ? 
+                `<div class="trait-container">
+                    ${traitsWithDescriptions.map(trait => `
+                        <span class="trait" 
+                            data-tooltip="${trait.description}"
+                            data-trait="${trait.name}">
+                            ${trait.name}
+                        </span>
+                    `).join('')}
+                </div>` 
+                : ''
+            }
             <div class="spell-details">
                 <p><strong>Rank:</strong> ${spell.rank}</p>
                 ${spell.heighten ? `<p><strong>Heighten:</strong> ${spell.heighten}</p>` : ''}
                 <p><strong>Traditions:</strong> ${spell.tradition || '-'}</p>
-                <p><strong>Traits:</strong> ${spell.trait || '-'}</p>
                 ${spell.rarity && spell.rarity !== 'Common' ? `<p><strong>Rarity:</strong> ${spell.rarity}</p>` : ''}
                 ${spell.source ? `<p><strong>Source:</strong> ${spell.source}</p>` : ''}
                 ${spell.spell_type ? `<p><strong>Spell Type:</strong> ${spell.spell_type}</p>` : ''}
@@ -285,7 +309,10 @@ function initializeTheme() {
 }
 
 function getSelectedValues(elementId) {
-    const checkboxes = document.querySelectorAll(`#${elementId} input[type="checkbox"]:checked`);
+    const container = document.getElementById(elementId);
+    if (!container) return [];
+    
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
