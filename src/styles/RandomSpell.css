@@ -658,4 +658,32 @@ body.light-theme .logic-toggle label {
 .trait[data-trait="Unique"] {
     background-color: rgb(128, 0, 128);  /* Purple from the Unique example */
     color: white;
+}
+
+.spell-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.spell-title {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.spell-header h2 {
+    margin: 0;
+}
+
+.spell-actions {
+    font-size: 0.9em;
+    color: #cccccc;
+}
+
+.spell-rank {
+    font-weight: bold;
+    font-size: 1.4em;  /* Increased from 1.1em */
+    color: white;
 } 

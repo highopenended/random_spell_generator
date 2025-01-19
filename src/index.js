@@ -170,6 +170,32 @@ function displaySpell(spell, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    // Function to convert action text to number
+    function formatActions(actionText) {
+        if (!actionText) return '';
+        
+        // Convert word numbers to digits
+        const wordToNumber = {
+            'one': '1',
+            'two': '2',
+            'three': '3',
+            'free': 'Free',
+            'reaction': 'Reaction',
+            'minute': 'Minute',
+            'minutes': 'Minutes',
+            'hour': 'Hour',
+            'hours': 'Hours'
+        };
+
+        let formattedText = actionText.toLowerCase();
+        Object.entries(wordToNumber).forEach(([word, number]) => {
+            formattedText = formattedText.replace(word, number);
+        });
+
+        // Return without brackets
+        return formattedText;
+    }
+
     // Split traits into array and filter out empty strings
     const traits = spell.trait ? spell.trait.split(',').map(t => t.trim()).filter(t => t) : [];
 
@@ -184,7 +210,13 @@ function displaySpell(spell, containerId) {
 
     container.innerHTML = `
         <div class="spell-card">
-            <h2>${spell.name}</h2>
+            <div class="spell-header">
+                <div class="spell-title">
+                    <h2>${spell.name}</h2>
+                    ${spell.actions ? `<span class="spell-actions">[${formatActions(spell.actions)}]</span>` : ''}
+                </div>
+                <span class="spell-rank">${spell.rank}</span>
+            </div>
             ${traitsWithDescriptions.length > 0 ? 
                 `<div class="trait-container">
                     ${traitsWithDescriptions.map(trait => `
@@ -198,13 +230,10 @@ function displaySpell(spell, containerId) {
                 : ''
             }
             <div class="spell-details">
-                <p><strong>Rank:</strong> ${spell.rank}</p>
                 ${spell.heighten ? `<p><strong>Heighten:</strong> ${spell.heighten}</p>` : ''}
                 <p><strong>Traditions:</strong> ${spell.tradition || '-'}</p>
                 ${spell.rarity && spell.rarity !== 'Common' ? `<p><strong>Rarity:</strong> ${spell.rarity}</p>` : ''}
-                ${spell.source ? `<p><strong>Source:</strong> ${spell.source}</p>` : ''}
                 ${spell.spell_type ? `<p><strong>Spell Type:</strong> ${spell.spell_type}</p>` : ''}
-                ${spell.actions ? `<p><strong>Actions:</strong> ${spell.actions}</p>` : ''}
                 ${spell.trigger ? `<p><strong>Trigger:</strong> ${spell.trigger}</p>` : ''}
                 ${spell.target ? `<p><strong>Target:</strong> ${spell.target}</p>` : ''}
                 ${spell.range ? `<p><strong>Range:</strong> ${spell.range}</p>` : ''}
