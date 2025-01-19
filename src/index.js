@@ -6,21 +6,97 @@ function getRandomSpell() {
     return spellsData[randomIndex];
 }
 
+function canCastAtRank(spell, targetRank) {
+    // Special handling for cantrips
+    const isCantrip = spell.spell_type === 'Cantrip';
+    const spellBaseRank = isCantrip ? 'cantrip' : 
+                         parseInt(spell.rank.replace(/[^\d]/g, ''));
+    
+    // If targeting cantrip rank, only return true if it's a cantrip
+    if (targetRank === 'cantrip') {
+        return isCantrip;
+    }
+
+    const targetRankNum = parseInt(targetRank);
+
+    // If it's exactly the rank we want (and not a cantrip unless we're including them)
+    if (!isCantrip && spellBaseRank === targetRankNum) {
+        return true;
+    }
+
+    // If we don't want heightened spells or there's no heightening, return false
+    if (!spell.heighten || spell.heighten === "") {
+        return false;
+    }
+
+    // Don't include heightened cantrips unless specifically allowed
+    if (isCantrip && !document.getElementById('includeCantrips').checked) {
+        return false;
+    }
+
+    // Handle "+N" heightening
+    if (spell.heighten.includes('+')) {
+        const increment = parseInt(spell.heighten.replace(/[^\d]/g, ''));
+        // For cantrips, start at 1st rank
+        let currentRank = isCantrip ? 1 : spellBaseRank + increment;
+        while (currentRank <= 10) {
+            if (currentRank === targetRankNum) {
+                return true;
+            }
+            currentRank += increment;
+        }
+    }
+    // Handle specific rank heightening
+    else {
+        const heightenedRanks = spell.heighten.split(',').map(r => {
+            return parseInt(r.trim().replace(/[^\d]/g, ''));
+        });
+        if (heightenedRanks.includes(targetRankNum)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // Get a random spell filtered by specific criteria
 function getRandomSpellByFilter() {
-    const selectedLevels = getSelectedValues('spellLevels');
+    const selectedRanks = getSelectedValues('spellLevels');
     const selectedTraditions = getSelectedValues('traditions');
     const traditionLogic = document.querySelector('input[name="traditionLogic"]:checked').value;
+    const includeHeightened = document.getElementById('includeHeightened').checked;
+    const includeCantrips = document.getElementById('includeCantrips').checked;
     
-    console.log('Filtering with:', { selectedLevels, selectedTraditions, traditionLogic });
+    console.log('Filtering with:', { 
+        selectedRanks, 
+        selectedTraditions, 
+        traditionLogic, 
+        includeHeightened,
+        includeCantrips 
+    });
 
     let filteredSpells = spellsData.filter(spell => {
-        // Filter by level
-        if (selectedLevels.length > 0) {
-            const spellLevel = spell.rank.toLowerCase().includes('cantrip') ? '0' : 
-                spell.rank.replace(/[^\d]/g, '');
-            if (!selectedLevels.includes(spellLevel)) {
-                return false;
+        // Filter by rank
+        if (selectedRanks.length > 0) {
+            const isCantrip = spell.spell_type === 'Cantrip';
+            
+            // If we're not including heightened spells, just check the base rank
+            if (!includeHeightened) {
+                if (isCantrip) {
+                    return selectedRanks.includes('cantrip');
+                } else {
+                    const baseRankNumber = spell.rank.replace(/[^\d]/g, '');
+                    return selectedRanks.includes(baseRankNumber);
+                }
+            }
+            // If we are including heightened spells, check if it can be cast at any selected rank
+            else {
+                const canCastAtAnySelectedRank = selectedRanks.some(rank => 
+                    canCastAtRank(spell, rank)
+                );
+                if (!canCastAtAnySelectedRank) {
+                    return false;
+                }
             }
         }
 
@@ -89,24 +165,31 @@ function getMultipleRandomSpells(count, filterOptions = {}) {
 const randomDivineSpells = getMultipleRandomSpells(3, { tradition: 'divine' });
 console.log('Random divine spells:', randomDivineSpells.map(spell => spell.name));
 
-function displaySpell(spell, elementId) {
-    const spellDisplay = document.getElementById(elementId);
-    if (!spellDisplay) {
-        console.error(`Element with id ${elementId} not found`);
-        return;
-    }
+function displaySpell(spell, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
 
-    spellDisplay.innerHTML = `
+    container.innerHTML = `
         <div class="spell-card">
             <h2>${spell.name}</h2>
-            <p><strong>Level:</strong> ${spell.rank}</p>
-            <p><strong>Traditions:</strong> ${spell.tradition}</p>
-            <p><strong>Traits:</strong> ${spell.trait}</p>
-            <p><strong>Summary:</strong> ${spell.summary}</p>
-            ${spell.range ? `<p><strong>Range:</strong> ${spell.range}</p>` : ''}
-            ${spell.area ? `<p><strong>Area:</strong> ${spell.area}</p>` : ''}
-            ${spell.duration ? `<p><strong>Duration:</strong> ${spell.duration}</p>` : ''}
-            ${spell.defense ? `<p><strong>Defense:</strong> ${spell.defense}</p>` : ''}
+            <div class="spell-details">
+                <p><strong>Rank:</strong> ${spell.rank}</p>
+                ${spell.heighten ? `<p><strong>Heighten:</strong> ${spell.heighten}</p>` : ''}
+                <p><strong>Traditions:</strong> ${spell.tradition || '-'}</p>
+                <p><strong>Traits:</strong> ${spell.trait || '-'}</p>
+                ${spell.rarity && spell.rarity !== 'Common' ? `<p><strong>Rarity:</strong> ${spell.rarity}</p>` : ''}
+                ${spell.source ? `<p><strong>Source:</strong> ${spell.source}</p>` : ''}
+                ${spell.spell_type ? `<p><strong>Spell Type:</strong> ${spell.spell_type}</p>` : ''}
+                ${spell.actions ? `<p><strong>Actions:</strong> ${spell.actions}</p>` : ''}
+                ${spell.trigger ? `<p><strong>Trigger:</strong> ${spell.trigger}</p>` : ''}
+                ${spell.target ? `<p><strong>Target:</strong> ${spell.target}</p>` : ''}
+                ${spell.range ? `<p><strong>Range:</strong> ${spell.range}</p>` : ''}
+                ${spell.area ? `<p><strong>Area:</strong> ${spell.area}</p>` : ''}
+                ${spell.duration ? `<p><strong>Duration:</strong> ${spell.duration}</p>` : ''}
+                ${spell.defense ? `<p><strong>Defense:</strong> ${spell.defense}</p>` : ''}
+                ${spell.summary ? `<p><strong>Summary:</strong> ${spell.summary}</p>` : ''}
+                <p class="spell-link"><a href="${spell.Link}" target="_blank">View Full Details ↗</a></p>
+            </div>
         </div>
     `;
 }

@@ -11,39 +11,52 @@
       <button id="themeToggle" class="theme-toggle">🌞 Light Mode</button>
       <h1>Random Spell Generator</h1>
       <div class="controls">
-        <div class="filter-group">
-          <label>Spell Levels:</label>
-          <div class="checkbox-group" id="spellLevels">
-            <label><input type="checkbox" value="0"> Cantrips</label>
-            <label><input type="checkbox" value="1"> 1st</label>
-            <label><input type="checkbox" value="2"> 2nd</label>
-            <label><input type="checkbox" value="3"> 3rd</label>
-            <label><input type="checkbox" value="4"> 4th</label>
-            <label><input type="checkbox" value="5"> 5th</label>
-            <label><input type="checkbox" value="6"> 6th</label>
-            <label><input type="checkbox" value="7"> 7th</label>
-            <label><input type="checkbox" value="8"> 8th</label>
-            <label><input type="checkbox" value="9"> 9th</label>
-            <label><input type="checkbox" value="10"> 10th</label>
-          </div>
-        </div>
-        
-        <div class="filter-group">
-          <label>Traditions:</label>
-          <div class="tradition-filter">
-            <div class="checkbox-group" id="traditions">
-              <label><input type="checkbox" value="arcane"> Arcane</label>
-              <label><input type="checkbox" value="divine"> Divine</label>
-              <label><input type="checkbox" value="occult"> Occult</label>
-              <label><input type="checkbox" value="primal"> Primal</label>
+        <div class="filters-container">
+          <div class="filter-group">
+            <label>Spell Ranks:</label>
+            <div class="rank-selection">
+              <div class="checkbox-container">
+                <div class="checkbox-group" id="spellLevels">
+                  <label><input type="checkbox" value="cantrip"> Cantrips</label>
+                  <label><input type="checkbox" value="1"> 1st</label>
+                  <label><input type="checkbox" value="2"> 2nd</label>
+                  <label><input type="checkbox" value="3"> 3rd</label>
+                  <label><input type="checkbox" value="4"> 4th</label>
+                  <label><input type="checkbox" value="5"> 5th</label>
+                  <label><input type="checkbox" value="6"> 6th</label>
+                  <label><input type="checkbox" value="7"> 7th</label>
+                  <label><input type="checkbox" value="8"> 8th</label>
+                  <label><input type="checkbox" value="9"> 9th</label>
+                  <label><input type="checkbox" value="10"> 10th</label>
+                </div>
+              </div>
+              <div class="checkbox-container heighten-container">
+                <div class="heighten-toggle">
+                  <label><input type="checkbox" id="includeHeightened"> Include Heightened Spells</label>
+                </div>
+                <div class="heighten-toggle">
+                  <label><input type="checkbox" id="includeCantrips"> Include Heightened Cantrips</label>
+                </div>
+              </div>
             </div>
-            <div class="logic-toggle">
-              <label>
-                <input type="radio" name="traditionLogic" value="OR" checked> OR
-              </label>
-              <label>
-                <input type="radio" name="traditionLogic" value="AND"> AND
-              </label>
+          </div>
+          
+          <div class="filter-group">
+            <label>Traditions:</label>
+            <div class="tradition-filter">
+              <div class="checkbox-container compact">
+                <div class="checkbox-group" id="traditions">
+                  <label><input type="checkbox" value="arcane"> Arcane</label>
+                  <label><input type="checkbox" value="divine"> Divine</label>
+                  <label><input type="checkbox" value="occult"> Occult</label>
+                  <label><input type="checkbox" value="primal"> Primal</label>
+                  <label><input type="checkbox" value="elemental"> Elemental</label>
+                </div>
+                <div class="logic-toggle">
+                  <label><input type="radio" name="traditionLogic" value="OR" checked> OR</label>
+                  <label><input type="radio" name="traditionLogic" value="AND"> AND</label>
+                </div>
+              </div>
             </div>
           </div>
         </div>
