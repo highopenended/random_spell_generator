@@ -1,23 +1,49 @@
 import { spellsData } from '../data/spellsData';
 
-export function generateRandomSpell(level = 'All Levels', tradition = 'All Traditions') {
-    console.log('Generating random spell with:', { level, tradition });
+export function generateRandomSpell(filters) {
+    console.log('Generating random spell with filters:', filters);
     console.log('Available spells:', spellsData);
 
     let filteredSpells = [...spellsData];
 
+    // Filter by spell types
+    if (filters.spellTypes && filters.spellTypes.length > 0) {
+        filteredSpells = filteredSpells.filter(spell => {
+            return filters.spellTypes.some(type => {
+                switch (type) {
+                    case 'cantrips':
+                        return spell.spell_type === 'Cantrip';
+                    case 'ranked':
+                        return spell.spell_type === 'Spell';
+                    case 'focus':
+                        return spell.spell_type === 'Focus';
+                    default:
+                        return false;
+                }
+            });
+        });
+    }
+
     // Filter by level if specified
-    if (level !== 'All Levels') {
+    if (filters.levels && filters.levels.length > 0) {
         filteredSpells = filteredSpells.filter(spell => 
-            spell.level === parseInt(level)
+            filters.levels.includes(spell.level.toString())
         );
     }
 
-    // Filter by tradition if specified
-    if (tradition !== 'All Traditions') {
-        filteredSpells = filteredSpells.filter(spell => 
-            spell.traditions.includes(tradition.toLowerCase())
-        );
+    // Filter by traditions if specified
+    if (filters.traditions && filters.traditions.length > 0) {
+        filteredSpells = filteredSpells.filter(spell => {
+            if (filters.traditionLogic === 'AND') {
+                return filters.traditions.every(tradition => 
+                    spell.traditions.includes(tradition.toLowerCase())
+                );
+            } else {
+                return filters.traditions.some(tradition => 
+                    spell.traditions.includes(tradition.toLowerCase())
+                );
+            }
+        });
     }
 
     console.log('Filtered spells:', filteredSpells);

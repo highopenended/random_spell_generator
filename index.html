@@ -12,6 +12,7 @@
       <h1>Random Spell Generator</h1>
       <div class="controls">
         <div class="filters-container">
+
           <div class="filter-group">
             <label>Spell Ranks:</label>
             <div class="rank-selection">
@@ -32,10 +33,10 @@
               </div>
               <div class="checkbox-container heighten-container">
                 <div class="heighten-toggle">
-                  <label><input type="checkbox" id="includeHeightened"> Include Heightened Spells</label>
+                  <label><input type="checkbox" id="includeHeightened"> Heightened Spells</label>
                 </div>
                 <div class="heighten-toggle">
-                  <label><input type="checkbox" id="includeCantrips"> Include Heightened Cantrips</label>
+                  <label><input type="checkbox" id="includeCantrips"> Heightened Cantrips</label>
                 </div>
               </div>
             </div>
@@ -57,6 +58,17 @@
                   <label><input type="radio" name="traditionLogic" value="AND"> AND</label>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Spell Types:</label>
+          <div class="checkbox-container">
+            <div class="checkbox-group" id="spellTypes">
+              <label><input type="checkbox" value="cantrips"> Cantrips</label>
+              <label><input type="checkbox" value="ranked"> Ranked Spells</label>
+              <label><input type="checkbox" value="focus"> Focus Spells</label>
             </div>
           </div>
         </div>

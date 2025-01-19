@@ -215,7 +215,16 @@ function displaySpell(spell, containerId) {
                     <h2>${spell.name}</h2>
                     ${spell.actions ? `<span class="spell-actions">[${formatActions(spell.actions)}]</span>` : ''}
                 </div>
-                <span class="spell-rank">${spell.rank}</span>
+                <span class="spell-rank">${(() => {
+                    const rankNumber = spell.rank.replace(/[^\d]/g, '');
+                    if (spell.spell_type === 'Cantrip') {
+                        return `Cantrip ${rankNumber}`;
+                    } else if (spell.trait?.includes('Focus')) {
+                        return `Focus ${rankNumber}`;
+                    } else {
+                        return `Spell ${rankNumber}`;
+                    }
+                })()}</span>
             </div>
             ${traitsWithDescriptions.length > 0 ? 
                 `<div class="trait-container">
@@ -248,25 +257,27 @@ function displaySpell(spell, containerId) {
 }
 
 function populateLevelDropdown() {
-    const levelSelect = document.getElementById('spellLevel');
+    const levelSelect = document.getElementById('spellLevels');
     if (!levelSelect) return;
 
-    // Get unique levels from spells
-    const levels = new Set(spellsData.map(spell => 
-        spell.rank.toLowerCase().includes('cantrip') ? '0' : spell.rank.replace(/[^\d]/g, '')
-    ));
-    
-    // Sort levels numerically
-    const sortedLevels = Array.from(levels).sort((a, b) => Number(a) - Number(b));
-    
-    // Add options for each level
-    levelSelect.innerHTML = '<option value="all">All Levels</option>';
-    sortedLevels.forEach(level => {
-        const option = document.createElement('option');
-        option.value = level;
-        option.textContent = level === '0' ? 'Cantrip' : `Level ${level}`;
-        levelSelect.appendChild(option);
-    });
+    // Create checkboxes for levels 1-10
+    levelSelect.innerHTML = Array.from({length: 10}, (_, i) => i + 1)
+        .map(level => `
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="level${level}" value="${level}" />
+                <label for="level${level}">${level}${getOrdinalSuffix(level)}</label>
+            </div>
+        `).join('');
+}
+
+// Helper function to add ordinal suffixes (1st, 2nd, 3rd, etc.)
+function getOrdinalSuffix(num) {
+    const j = num % 10;
+    const k = num % 100;
+    if (j == 1 && k != 11) return 'st';
+    if (j == 2 && k != 12) return 'nd';
+    if (j == 3 && k != 13) return 'rd';
+    return 'th';
 }
 
 function populateTraditionDropdown() {
