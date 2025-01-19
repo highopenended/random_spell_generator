@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Spells</title>
+</head>
+<body>
+    <h1>Spell Upload Tool</h1>
+    <button id="uploadButton">Start Upload</button>
+    <div id="status"></div>
+    
+    <script type="module">
+        import { spellsData } from './src/data/spellsData.js';
+        import { uploadSpells } from './src/scripts/uploadSpells.js';
+
+        document.getElementById('uploadButton').addEventListener('click', async () => {
+            const statusDiv = document.getElementById('status');
+            try {
+                console.log('Starting upload process...');
+                console.log('Number of spells to upload:', spellsData.length);
+                statusDiv.textContent = 'Uploading...';
+                
+                const uploadedCount = await uploadSpells(spellsData);
+                
+                statusDiv.textContent = `Upload complete! ${uploadedCount} spells uploaded.`;
+                console.log('Upload completed successfully');
+            } catch (error) {
+                console.error('Upload failed:', error);
+                statusDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -4,11 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Spell Generator</title>
+    <style>
+        .spell-card {
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .spell-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        #spellCount {
+            margin: 20px;
+            font-weight: bold;
+        }
+        
+        #spellsList {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+    <!-- Add type="module" to allow ES6 imports -->
+    <script type="module" src="/src/index.js"></script>
   </head>
   <body>
     <div id="app">
       <h1>Random Spell Generator</h1>
+      <div class="controls">
+        <select id="spellLevel">
+          <option value="all">All Levels</option>
+        </select>
+        <select id="tradition">
+          <option value="all">All Traditions</option>
+        </select>
+        <button id="generateSpell">Generate Spell</button>
+      </div>
+      <div id="spellResult"></div>
+      <div id="randomSpellResult"></div>
     </div>
-    <script type="module" src="/src/index.js"></script>
   </body>
 </html>
