@@ -4,46 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Spell Generator</title>
-    <style>
-        .spell-card {
-            border: 1px solid #ccc;
-            margin: 10px;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        
-        .spell-card h3 {
-            margin-top: 0;
-            color: #2c3e50;
-        }
-        
-        #spellCount {
-            margin: 20px;
-            font-weight: bold;
-        }
-        
-        #spellsList {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-    </style>
-    <!-- Add type="module" to allow ES6 imports -->
-    <script type="module" src="/src/index.js"></script>
+    <link rel="stylesheet" href="/src/styles/RandomSpell.css">
   </head>
   <body>
     <div id="app">
+      <button id="themeToggle" class="theme-toggle">🌞 Light Mode</button>
       <h1>Random Spell Generator</h1>
       <div class="controls">
-        <select id="spellLevel">
-          <option value="all">All Levels</option>
-        </select>
-        <select id="tradition">
-          <option value="all">All Traditions</option>
-        </select>
+        <div class="filter-group">
+          <label>Spell Levels:</label>
+          <div class="checkbox-group" id="spellLevels">
+            <label><input type="checkbox" value="0"> Cantrips</label>
+            <label><input type="checkbox" value="1"> 1st</label>
+            <label><input type="checkbox" value="2"> 2nd</label>
+            <label><input type="checkbox" value="3"> 3rd</label>
+            <label><input type="checkbox" value="4"> 4th</label>
+            <label><input type="checkbox" value="5"> 5th</label>
+            <label><input type="checkbox" value="6"> 6th</label>
+            <label><input type="checkbox" value="7"> 7th</label>
+            <label><input type="checkbox" value="8"> 8th</label>
+            <label><input type="checkbox" value="9"> 9th</label>
+            <label><input type="checkbox" value="10"> 10th</label>
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <label>Traditions:</label>
+          <div class="tradition-filter">
+            <div class="checkbox-group" id="traditions">
+              <label><input type="checkbox" value="arcane"> Arcane</label>
+              <label><input type="checkbox" value="divine"> Divine</label>
+              <label><input type="checkbox" value="occult"> Occult</label>
+              <label><input type="checkbox" value="primal"> Primal</label>
+            </div>
+            <div class="logic-toggle">
+              <label>
+                <input type="radio" name="traditionLogic" value="OR" checked> OR
+              </label>
+              <label>
+                <input type="radio" name="traditionLogic" value="AND"> AND
+              </label>
+            </div>
+          </div>
+        </div>
+
         <button id="generateSpell">Generate Spell</button>
       </div>
-      <div id="spellResult"></div>
       <div id="randomSpellResult"></div>
     </div>
+    <script type="module" src="/src/index.js"></script>
   </body>
 </html>

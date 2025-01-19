@@ -1,53 +1,107 @@
-import { db } from './firebase-config.js';
-import { collection, getDocs } from 'firebase/firestore';
+import { spellsData } from './data/spellsData.js';
 
-async function getRandomSpell(level = null, tradition = null) {
-    try {
-        const spellsRef = collection(db, 'spells');
-        const snapshot = await getDocs(spellsRef);
-        
-        let spells = [];
-        snapshot.forEach((doc) => {
-            const spell = doc.data();
-            // Filter by level if specified
-            if (level !== null && spell.level !== level) return;
-            // Filter by tradition if specified
-            if (tradition !== null && !spell.traditions.includes(tradition)) return;
-            spells.push(spell);
-        });
-
-        if (spells.length === 0) {
-            throw new Error('No spells found matching the criteria');
-        }
-
-        const randomIndex = Math.floor(Math.random() * spells.length);
-        return spells[randomIndex];
-    } catch (error) {
-        console.error('Error getting random spell:', error);
-        throw error;
-    }
+// Get a random spell from the entire collection
+function getRandomSpell() {
+    const randomIndex = Math.floor(Math.random() * spellsData.length);
+    return spellsData[randomIndex];
 }
 
-function displaySpell(spell, elementId) {
-    console.log('Displaying spell:', spell); // Debug log
+// Get a random spell filtered by specific criteria
+function getRandomSpellByFilter() {
+    const selectedLevels = getSelectedValues('spellLevels');
+    const selectedTraditions = getSelectedValues('traditions');
+    const traditionLogic = document.querySelector('input[name="traditionLogic"]:checked').value;
     
+    console.log('Filtering with:', { selectedLevels, selectedTraditions, traditionLogic });
+
+    let filteredSpells = spellsData.filter(spell => {
+        // Filter by level
+        if (selectedLevels.length > 0) {
+            const spellLevel = spell.rank.toLowerCase().includes('cantrip') ? '0' : 
+                spell.rank.replace(/[^\d]/g, '');
+            if (!selectedLevels.includes(spellLevel)) {
+                return false;
+            }
+        }
+
+        // Filter by traditions
+        if (selectedTraditions.length > 0) {
+            const spellTraditions = spell.tradition.toLowerCase().split(',').map(t => t.trim());
+            
+            if (traditionLogic === 'AND') {
+                // Check if spell has ALL selected traditions
+                return selectedTraditions.every(t => spellTraditions.includes(t));
+            } else {
+                // Check if spell has ANY selected traditions
+                return selectedTraditions.some(t => spellTraditions.includes(t));
+            }
+        }
+
+        return true;
+    });
+
+    console.log('Filtered spells count:', filteredSpells.length);
+
+    if (filteredSpells.length === 0) {
+        return null;
+    }
+
+    const randomIndex = Math.floor(Math.random() * filteredSpells.length);
+    return filteredSpells[randomIndex];
+}
+
+// Example usage:
+// Get any random spell
+const randomSpell = getRandomSpell();
+console.log('Random spell:', randomSpell.name);
+
+// Get a random arcane cantrip
+const randomArcaneCantrip = getRandomSpellByFilter({
+    tradition: 'arcane',
+    level: '0'
+});
+console.log('Random arcane cantrip:', randomArcaneCantrip?.name);
+
+// Get a random rare spell
+const randomRareSpell = getRandomSpellByFilter({
+    level: '1'
+});
+console.log('Random rare spell:', randomRareSpell?.name);
+
+// Get multiple random spells
+function getMultipleRandomSpells(count, filterOptions = {}) {
+    const results = [];
+    const maxAttempts = count * 2; // Prevent infinite loops
+    let attempts = 0;
+
+    while (results.length < count && attempts < maxAttempts) {
+        const spell = getRandomSpellByFilter(filterOptions);
+        if (spell && !results.find(s => s.name === spell.name)) {
+            results.push(spell);
+        }
+        attempts++;
+    }
+
+    return results;
+}
+
+// Example: Get 3 random divine spells
+const randomDivineSpells = getMultipleRandomSpells(3, { tradition: 'divine' });
+console.log('Random divine spells:', randomDivineSpells.map(spell => spell.name));
+
+function displaySpell(spell, elementId) {
     const spellDisplay = document.getElementById(elementId);
     if (!spellDisplay) {
         console.error(`Element with id ${elementId} not found`);
         return;
     }
 
-    if (!spell) {
-        console.error('No spell data provided to display');
-        return;
-    }
-
     spellDisplay.innerHTML = `
-        <div class="spell-card random">
+        <div class="spell-card">
             <h2>${spell.name}</h2>
-            <p><strong>Level:</strong> ${spell.level}</p>
-            <p><strong>Traditions:</strong> ${spell.traditions.join(', ')}</p>
-            <p><strong>Traits:</strong> ${spell.traits.join(', ')}</p>
+            <p><strong>Level:</strong> ${spell.rank}</p>
+            <p><strong>Traditions:</strong> ${spell.tradition}</p>
+            <p><strong>Traits:</strong> ${spell.trait}</p>
             <p><strong>Summary:</strong> ${spell.summary}</p>
             ${spell.range ? `<p><strong>Range:</strong> ${spell.range}</p>` : ''}
             ${spell.area ? `<p><strong>Area:</strong> ${spell.area}</p>` : ''}
@@ -55,107 +109,132 @@ function displaySpell(spell, elementId) {
             ${spell.defense ? `<p><strong>Defense:</strong> ${spell.defense}</p>` : ''}
         </div>
     `;
-    console.log('Display updated'); // Debug log
 }
 
-async function loadSpells() {
-    try {
-        const spellsRef = collection(db, 'spells');
-        const snapshot = await getDocs(spellsRef);
-        const spellsList = document.getElementById('spellsList');
-        
-        // Clear existing content
-        spellsList.innerHTML = '';
-        
-        // Sort spells by level and then name
-        const spells = [];
-        snapshot.forEach((doc) => {
-            spells.push(doc.data());
-        });
-        
-        spells.sort((a, b) => {
-            if (a.level === b.level) {
-                return a.name.localeCompare(b.name);
-            }
-            return a.level - b.level;
-        });
-
-        // Create spell list
-        spells.forEach((spell) => {
-            const spellCard = document.createElement('div');
-            spellCard.className = 'spell-card';
-            spellCard.innerHTML = `
-                <h3>${spell.name}</h3>
-                <p><strong>Level:</strong> ${spell.level}</p>
-                <p><strong>Traditions:</strong> ${spell.traditions.join(', ')}</p>
-                <p><strong>Summary:</strong> ${spell.summary}</p>
-            `;
-            spellsList.appendChild(spellCard);
-        });
-
-        // Update count
-        document.getElementById('spellCount').textContent = `Total Spells: ${spells.length}`;
-    } catch (error) {
-        console.error('Error loading spells:', error);
-    }
-}
-
-async function populateLevelDropdown() {
-    try {
-        const spellsRef = collection(db, 'spells');
-        const snapshot = await getDocs(spellsRef);
-        
-        // Get unique levels from spells
-        const levels = new Set();
-        snapshot.forEach((doc) => {
-            const spell = doc.data();
-            levels.add(spell.level);
-        });
-        
-        // Sort levels numerically
-        const sortedLevels = Array.from(levels).sort((a, b) => a - b);
-        
-        // Get the dropdown
-        const levelSelect = document.getElementById('spellLevel');
-        levelSelect.innerHTML = '<option value="all">All Levels</option>';
-        
-        // Add options for each level
-        sortedLevels.forEach(level => {
-            const option = document.createElement('option');
-            option.value = level;
-            // Display "Cantrip" for level 0, otherwise show "Level X"
-            option.textContent = level === 0 ? 'Cantrip' : `Level ${level}`;
-            levelSelect.appendChild(option);
-        });
-        
-        console.log('Populated levels:', sortedLevels);
-    } catch (error) {
-        console.error('Error populating level dropdown:', error);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Populate dropdowns when page loads
-    populateLevelDropdown();
-    
-    loadSpells();
-
-    // Set up random spell generator
-    const generateButton = document.getElementById('generateSpell');
+function populateLevelDropdown() {
     const levelSelect = document.getElementById('spellLevel');
-    const traditionSelect = document.getElementById('tradition');
+    if (!levelSelect) return;
 
-    generateButton.addEventListener('click', async () => {
-        try {
-            const level = levelSelect.value === 'all' ? null : parseInt(levelSelect.value);
-            const tradition = traditionSelect.value === 'all' ? null : traditionSelect.value;
-            
-            const randomSpell = await getRandomSpell(level, tradition);
-            displaySpell(randomSpell, 'randomSpellResult');
-        } catch (error) {
-            console.error('Error generating random spell:', error);
-            document.getElementById('randomSpellResult').innerHTML = 
-                `<div class="error">Error generating spell: ${error.message}</div>`;
-        }
+    // Get unique levels from spells
+    const levels = new Set(spellsData.map(spell => 
+        spell.rank.toLowerCase().includes('cantrip') ? '0' : spell.rank.replace(/[^\d]/g, '')
+    ));
+    
+    // Sort levels numerically
+    const sortedLevels = Array.from(levels).sort((a, b) => Number(a) - Number(b));
+    
+    // Add options for each level
+    levelSelect.innerHTML = '<option value="all">All Levels</option>';
+    sortedLevels.forEach(level => {
+        const option = document.createElement('option');
+        option.value = level;
+        option.textContent = level === '0' ? 'Cantrip' : `Level ${level}`;
+        levelSelect.appendChild(option);
     });
+}
+
+function populateTraditionDropdown() {
+    const traditionSelect = document.getElementById('tradition');
+    if (!traditionSelect) return;
+
+    // Get unique traditions from spells
+    const traditions = new Set();
+    spellsData.forEach(spell => {
+        spell.tradition.split(',').forEach(t => {
+            const tradition = t.trim();
+            if (tradition) traditions.add(tradition);
+        });
+    });
+    
+    // Sort traditions alphabetically
+    const sortedTraditions = Array.from(traditions).sort();
+    
+    // Add options for each tradition
+    traditionSelect.innerHTML = '<option value="all">All Traditions</option>';
+    sortedTraditions.forEach(tradition => {
+        const option = document.createElement('option');
+        option.value = tradition.toLowerCase();
+        option.textContent = tradition;
+        traditionSelect.appendChild(option);
+    });
+}
+
+// Simplified theme toggle
+function toggleTheme() {
+    console.log('Toggle theme clicked'); // Debug log
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    const isLightMode = body.classList.contains('light-theme');
+    
+    if (isLightMode) {
+        console.log('Switching to dark theme'); // Debug log
+        body.classList.remove('light-theme');
+        themeToggle.textContent = '🌞 Light Mode';
+        document.documentElement.style.backgroundColor = '#1a1a1a';
+        document.documentElement.style.color = '#ffffff';
+    } else {
+        console.log('Switching to light theme'); // Debug log
+        body.classList.add('light-theme');
+        themeToggle.textContent = '🌑 Dark Mode';
+        document.documentElement.style.backgroundColor = '#ffffff';
+        document.documentElement.style.color = '#333333';
+    }
+    
+    localStorage.setItem('theme', isLightMode ? 'dark' : 'light');
+}
+
+// Initialize theme
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    console.log('Initializing theme:', savedTheme); // Debug log
+    
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        document.getElementById('themeToggle').textContent = '🌑 Dark Mode';
+        document.documentElement.style.backgroundColor = '#ffffff';
+        document.documentElement.style.color = '#333333';
+    } else {
+        document.body.classList.remove('light-theme');
+        document.getElementById('themeToggle').textContent = '🌞 Light Mode';
+        document.documentElement.style.backgroundColor = '#1a1a1a';
+        document.documentElement.style.color = '#ffffff';
+    }
+}
+
+function getSelectedValues(elementId) {
+    const checkboxes = document.querySelectorAll(`#${elementId} input[type="checkbox"]:checked`);
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+// Update your DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded'); // Debug log
+    initializeTheme();
+    
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // Populate dropdowns
+    populateLevelDropdown();
+    populateTraditionDropdown();
+    
+    // Add event listener to generate button
+    const generateButton = document.getElementById('generateSpell');
+    if (generateButton) {
+        generateButton.addEventListener('click', () => {
+            const spell = getRandomSpellByFilter();
+            if (spell) {
+                displaySpell(spell, 'randomSpellResult');
+            } else {
+                document.getElementById('randomSpellResult').innerHTML = 
+                    '<p>No spells found matching the selected criteria.</p>';
+            }
+        });
+    }
+
+    // Generate an initial random spell
+    const initialSpell = getRandomSpellByFilter();
+    if (initialSpell) {
+        displaySpell(initialSpell, 'randomSpellResult');
+    }
 });
