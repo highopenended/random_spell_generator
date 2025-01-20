@@ -4,8 +4,8 @@ import { getFirestore } from "firebase/firestore";
 // Import analytics if you want to use it
 import { getAnalytics } from "firebase/analytics";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAXd9Qk5MyYmH4wq_W8L0-N1QyAPNT_0P0",
+const config = {
+  apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
   authDomain: "random-spell-generator.firebaseapp.com",
   projectId: "random-spell-generator",
   storageBucket: "random-spell-generator.firebasestorage.app",
@@ -15,7 +15,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(config);
 // Initialize Firestore
 export const db = getFirestore(app);
 // Initialize Analytics if you want to use it
