@@ -5,11 +5,6 @@
     box-sizing: border-box;
 }
 
-/* Only transition background colors, not text */
-body, .spell-card, .trait, button, select {
-    transition: background-color 0.2s;
-}
-
 /* Dark theme (default) */
 body {
     background-color: #1a1a1a !important;
@@ -17,6 +12,11 @@ body {
     font-family: Arial, sans-serif;
     padding: 20px;
     transition: background-color 0.2s;
+}
+
+/* Force immediate color changes for all text elements */
+h1, h2, h3, p, label, span, strong, div {
+    transition: none !important;
 }
 
 /* Light theme overrides */
