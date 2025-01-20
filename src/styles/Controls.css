@@ -6,6 +6,7 @@ button {
     padding: 8px 16px;
     font-size: 16px;
     border-radius: 4px;
+    /* Remove any transition here */
 }
 
 body.light-theme select,

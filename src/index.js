@@ -7,6 +7,11 @@ import './styles/FilterGroups.css';
 import './styles/Traits.css';
 import './styles/SearchCriteria.css';
 
+// Convert traitsData array to lookup object
+const traitsLookup = Object.fromEntries(
+    traitsData.map(item => [item.Trait, item.Description])
+);
+
 // Get a random spell from the entire collection
 function getRandomSpell() {
     const randomIndex = Math.floor(Math.random() * spellsData.length);
@@ -187,7 +192,7 @@ function displaySpell(spell, containerId) {
                 ${traits.length > 0 ? 
                     `<div class="trait-container">
                         ${traits.map(trait => `
-                            <span class="trait" data-trait="${trait}">
+                            <span class="trait" data-trait="${trait}" data-tooltip="${traitsLookup[trait] || 'No description available'}">
                                 ${trait}
                             </span>
                         `).join('')}

@@ -4,6 +4,7 @@
     padding: 20px;
     border-radius: 8px;
     margin: 10px 0;
+    /* Remove any transition here */
 }
 
 body.light-theme .spell-card {
