@@ -241,13 +241,9 @@ function toggleTheme() {
     if (isLightMode) {
         body.classList.remove('light-theme');
         themeToggle.textContent = '🌞 Light Mode';
-        document.documentElement.style.backgroundColor = '#1a1a1a';
-        document.documentElement.style.color = '#ffffff';
     } else {
         body.classList.add('light-theme');
         themeToggle.textContent = '🌑 Dark Mode';
-        document.documentElement.style.backgroundColor = '#ffffff';
-        document.documentElement.style.color = '#333333';
     }
     
     localStorage.setItem('theme', isLightMode ? 'dark' : 'light');
@@ -256,18 +252,13 @@ function toggleTheme() {
 // Initialize theme
 function initializeTheme() {
     const savedTheme = localStorage.getItem('theme');
-    // console.log('Initializing theme:', savedTheme); // Debug log
     
     if (savedTheme === 'light') {
         document.body.classList.add('light-theme');
         document.getElementById('themeToggle').textContent = '🌑 Dark Mode';
-        document.documentElement.style.backgroundColor = '#ffffff';
-        document.documentElement.style.color = '#333333';
     } else {
         document.body.classList.remove('light-theme');
         document.getElementById('themeToggle').textContent = '🌞 Light Mode';
-        document.documentElement.style.backgroundColor = '#1a1a1a';
-        document.documentElement.style.color = '#ffffff';
     }
 }
 

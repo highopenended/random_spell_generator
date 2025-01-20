@@ -13,6 +13,7 @@
     font-size: 0.9em;
     white-space: nowrap;
     cursor: help;
+    /* Remove any transition here */
 }
 
 .trait:hover::after {
@@ -30,6 +31,7 @@
     margin-top: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     border: 1px solid #3f4259;
+    /* Remove any transition here */
 }
 
 .light-theme .trait:hover::after {

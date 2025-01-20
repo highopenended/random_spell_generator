@@ -16,6 +16,7 @@
     color: #ffd700;
     text-transform: uppercase;
     letter-spacing: 1px;
+    /* Remove any transition here */
 }
 
 .criteria-details {
@@ -23,18 +24,21 @@
     flex-direction: column;
     gap: 6px;
     font-size: 0.9em;
+    /* Remove any transition here */
 }
 
 .criteria-row {
     display: flex;
     gap: 8px;
     align-items: center;
+    /* Remove any transition here */
 }
 
 .criteria-row strong {
     min-width: 100px;
     color: #add8e6;
     opacity: 0.9;
+    /* Remove any transition here */
 }
 
 /* Light theme overrides */

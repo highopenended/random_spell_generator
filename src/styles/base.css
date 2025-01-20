@@ -16,6 +16,7 @@ body {
     color: #ffffff !important;
     font-family: Arial, sans-serif;
     padding: 20px;
+    transition: background-color 0.2s;
 }
 
 /* Light theme overrides */
