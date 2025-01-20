@@ -20,33 +20,8 @@ body.light-theme {
     color: #333333 !important;
 }
 
-/* Force text colors */
-body.light-theme h1,
-body.light-theme h2,
-body.light-theme h3,
-body.light-theme p,
-body.light-theme strong {
-    color: #333333 !important;
-}
-
-h1, h2, h3, p, strong {
-    color: #ffffff !important;
-}
-
 /* Layout */
 #app {
     max-width: 800px;
     margin: 0 auto;
 }
-
-.App {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.random-spell-container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-} 
