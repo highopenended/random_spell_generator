@@ -1,5 +1,11 @@
 import { spellsData } from './data/spellsData.js';
 import traitsData from './data/traitsData.js';
+import './styles/base.css';
+import './styles/SpellCard.css';
+import './styles/Controls.css';
+import './styles/FilterGroups.css';
+import './styles/Traits.css';
+import './styles/SearchCriteria.css';
 
 // Get a random spell from the entire collection
 function getRandomSpell() {
@@ -268,6 +274,49 @@ function getSelectedValues(elementId) {
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
+function updateSearchCriteria() {
+    const selectedRanks = getSelectedValues('spellLevels');
+    const selectedTraditions = getSelectedValues('traditions');
+    const selectedSpellTypes = getSelectedValues('spellTypes');
+    const includeHeightened = document.getElementById('includeHeightened_spells')?.checked || false;
+    const traditionLogic = document.querySelector('input[name="traditionLogic"]:checked')?.value || 'OR';
+    
+    const criteriaText = `
+        <div class="search-criteria-box">
+            <div class="criteria-header">Current Search Criteria:</div>
+            <div class="criteria-details">
+                <div class="criteria-row">
+                    <strong>Ranks:</strong> ${selectedRanks.length ? selectedRanks.join(', ') : 'Any'}
+                </div>
+                <div class="criteria-row">
+                    <strong>Traditions:</strong> ${selectedTraditions.length ? 
+                        `${selectedTraditions.join(', ')} (${traditionLogic})` : 'Any'}
+                </div>
+                <div class="criteria-row">
+                    <strong>Types:</strong> ${selectedSpellTypes.length ? selectedSpellTypes.join(', ') : 'Any'}
+                </div>
+                ${includeHeightened ? 
+                    `<div class="criteria-row">
+                        <strong>Including Heightened Spells</strong>
+                    </div>` : 
+                    ''}
+            </div>
+        </div>
+    `;
+    
+    // Insert criteria before the spell result
+    const resultDiv = document.getElementById('randomSpellResult');
+    let criteriaDiv = document.getElementById('searchCriteria');
+    
+    if (!criteriaDiv) {
+        criteriaDiv = document.createElement('div');
+        criteriaDiv.id = 'searchCriteria';
+        resultDiv.parentNode.insertBefore(criteriaDiv, resultDiv);
+    }
+    
+    criteriaDiv.innerHTML = criteriaText;
+}
+
 // Update your DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
     // console.log('DOM loaded'); // Debug log
@@ -311,4 +360,21 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
         console.error('Error generating initial spell:', error);
     }
+
+    // Add event listeners for all filter changes
+    ['spellLevels', 'traditions', 'spellTypes'].forEach(id => {
+        const container = document.getElementById(id);
+        if (container) {
+            container.addEventListener('change', updateSearchCriteria);
+        }
+    });
+
+    // Add listeners for heightened spells and tradition logic
+    document.getElementById('includeHeightened_spells')?.addEventListener('change', updateSearchCriteria);
+    document.querySelectorAll('input[name="traditionLogic"]').forEach(radio => {
+        radio.addEventListener('change', updateSearchCriteria);
+    });
+
+    // Initial criteria display
+    updateSearchCriteria();
 });

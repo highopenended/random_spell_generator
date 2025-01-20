@@ -1,0 +1,64 @@
+select, 
+button {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+    border: 1px solid #404040 !important;
+    padding: 8px 16px;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+body.light-theme select,
+body.light-theme button {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid #dddddd !important;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-controls select,
+.filter-controls input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.filter-controls button {
+    padding: 8px 16px;
+    background-color: #4a4a4a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.filter-controls button:hover {
+    background-color: #666;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+/* Add these styles */
+input[type="checkbox"] {
+    margin-right: 6px;
+} 

@@ -626,10 +626,6 @@ body.light-theme .logic-toggle label {
     background-color: rgba(128, 128, 128, 0.15);
 }
 
-/* Size traits */
-.trait {
-    /* ... existing trait styles ... */
-}
 
 /* Specific trait colors */
 .trait[data-trait="Tiny"],
