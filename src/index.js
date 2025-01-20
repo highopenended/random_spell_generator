@@ -50,12 +50,12 @@ function getRandomSpellByFilter() {
     const includeHeightened = document.getElementById('includeHeightened_spells')?.checked || false;
     const traditionLogic = document.querySelector('input[name="traditionLogic"]:checked')?.value || 'OR';
     
-    console.log('Filter criteria:', { 
-        selectedRanks, 
-        selectedTraditions, 
-        traditionLogic, 
-        includeHeightened
-    });
+    // console.log('Filter criteria:', { 
+    //     selectedRanks, 
+    //     selectedTraditions, 
+    //     traditionLogic, 
+    //     includeHeightened
+    // });
 
     let filteredSpells = spellsData.filter(spell => {
         // FILTER BY RANK
@@ -73,11 +73,16 @@ function getRandomSpellByFilter() {
 
         // FILTER BY TRADITIONS
         if (selectedTraditions.length > 0) {
-            const spellTraditions = spell.tradition.toLowerCase().split(',').map(t => t.trim().toUpperCase());
-            const matchesTraditions = traditionLogic === 'AND' ? 
-                selectedTraditions.every(t => spellTraditions.includes(t.toUpperCase())) :
-                selectedTraditions.some(t => spellTraditions.includes(t.toUpperCase()));
-            if (!matchesTraditions) return false;
+            // If tradition is empty or just whitespace, pass the tradition check
+            if (!spell.tradition || spell.tradition.trim() === '') {
+                // Continue with other checks
+            } else {
+                const spellTraditions = spell.tradition.toLowerCase().split(',').map(t => t.trim().toUpperCase());
+                const matchesTraditions = traditionLogic === 'AND' ? 
+                    selectedTraditions.every(t => spellTraditions.includes(t.toUpperCase())) :
+                    selectedTraditions.some(t => spellTraditions.includes(t.toUpperCase()));
+                if (!matchesTraditions) return false;
+            }
         }
 
         // FILTER BY SPELL TYPES
@@ -98,7 +103,7 @@ function getRandomSpellByFilter() {
     }
     const randomIndex = Math.floor(Math.random() * filteredSpells.length);
 
-    console.log("Selected spell:", filteredSpells[randomIndex]);
+    // console.log("Selected spell:", filteredSpells[randomIndex]);
     return filteredSpells[randomIndex];
 }
 
@@ -110,7 +115,7 @@ function displaySpell(spell, containerId) {
         return;
     }
 
-    console.log('Displaying spell:', spell); // Debug log
+    // console.log('Displaying spell:', spell); // Debug log
 
     // Function to format heighten value to preserve "+"
     function formatHeighten(heighten) {
@@ -240,7 +245,7 @@ function toggleTheme() {
 // Initialize theme
 function initializeTheme() {
     const savedTheme = localStorage.getItem('theme');
-    console.log('Initializing theme:', savedTheme); // Debug log
+    // console.log('Initializing theme:', savedTheme); // Debug log
     
     if (savedTheme === 'light') {
         document.body.classList.add('light-theme');
@@ -265,7 +270,7 @@ function getSelectedValues(elementId) {
 
 // Update your DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded'); // Debug log
+    // console.log('DOM loaded'); // Debug log
     initializeTheme();
     
     const themeToggle = document.getElementById('themeToggle');
@@ -299,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Generate an initial random spell
     try {
         const initialSpell = getRandomSpellByFilter();
-        console.log('Initial spell:', initialSpell); // Debug log
+        // console.log('Initial spell:', initialSpell); // Debug log
         if (initialSpell) {
             displaySpell(initialSpell, 'randomSpellResult');
         }
