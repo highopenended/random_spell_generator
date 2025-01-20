@@ -84,7 +84,7 @@ function RandomSpell() {
 
                 <label>
                     Number of Spells:
-                    <input 
+                    <input
                         type="number" 
                         min="1" 
                         max="10" 
